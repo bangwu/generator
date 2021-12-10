@@ -313,7 +313,7 @@ public abstract class AbstractJavaMapperMethodGenerator extends AbstractGenerato
         importedTypes.add(parameterType);
 
         FullyQualifiedJavaType exampleType = new FullyQualifiedJavaType(introspectedTable.getExampleType());
-        method.addParameter(new Parameter(exampleType,"example", "@Param(\"example\")")); //$NON-NLS-1$ //$NON-NLS-2$
+        method.addParameter(new Parameter(exampleType,"query", "@Param(\"query\")")); //$NON-NLS-1$ //$NON-NLS-2$
         importedTypes.add(exampleType);
 
         importedTypes.add(new FullyQualifiedJavaType("org.apache.ibatis.annotations.Param")); //$NON-NLS-1$
