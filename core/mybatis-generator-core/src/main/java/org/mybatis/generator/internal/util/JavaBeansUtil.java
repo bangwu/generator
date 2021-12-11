@@ -15,22 +15,17 @@
  */
 package org.mybatis.generator.internal.util;
 
-import static org.mybatis.generator.internal.util.StringUtility.isTrue;
+import org.mybatis.generator.api.IntrospectedColumn;
+import org.mybatis.generator.api.IntrospectedTable;
+import org.mybatis.generator.api.dom.java.*;
+import org.mybatis.generator.config.Context;
+import org.mybatis.generator.config.PropertyRegistry;
+import org.mybatis.generator.config.TableConfiguration;
 
 import java.util.Locale;
 import java.util.Properties;
 
-import org.mybatis.generator.api.IntrospectedColumn;
-import org.mybatis.generator.api.IntrospectedTable;
-import org.mybatis.generator.api.dom.java.CompilationUnit;
-import org.mybatis.generator.api.dom.java.Field;
-import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
-import org.mybatis.generator.api.dom.java.JavaVisibility;
-import org.mybatis.generator.api.dom.java.Method;
-import org.mybatis.generator.api.dom.java.Parameter;
-import org.mybatis.generator.config.Context;
-import org.mybatis.generator.config.PropertyRegistry;
-import org.mybatis.generator.config.TableConfiguration;
+import static org.mybatis.generator.internal.util.StringUtility.isTrue;
 
 public class JavaBeansUtil {
 
@@ -268,22 +263,25 @@ public class JavaBeansUtil {
     }
 
     public static Method getJavaBeansSetter(IntrospectedColumn introspectedColumn,
-            Context context,
-            IntrospectedTable introspectedTable) {
-        Method method = getBasicJavaBeansSetter(introspectedColumn);
+                                            Context context,
+                                            IntrospectedTable introspectedTable,
+                                            boolean trimStringsEnabled) {
+        Method method = getBasicJavaBeansSetter(introspectedColumn, trimStringsEnabled);
         addGeneratedSetterJavaDoc(method, introspectedColumn, context, introspectedTable);
         return method;
     }
 
     public static Method getJavaBeansSetterWithGeneratedAnnotation(IntrospectedColumn introspectedColumn,
-            Context context,
-            IntrospectedTable introspectedTable, CompilationUnit compilationUnit) {
-        Method method = getBasicJavaBeansSetter(introspectedColumn);
+                                                                   Context context,
+                                                                   IntrospectedTable introspectedTable,
+                                                                   CompilationUnit compilationUnit,
+                                                                   boolean trimStringsEnabled) {
+        Method method = getBasicJavaBeansSetter(introspectedColumn, trimStringsEnabled);
         addGeneratedSetterAnnotation(method, introspectedColumn, context, introspectedTable, compilationUnit);
         return method;
     }
 
-    private static Method getBasicJavaBeansSetter(IntrospectedColumn introspectedColumn) {
+    private static Method getBasicJavaBeansSetter(IntrospectedColumn introspectedColumn, boolean trimStringsEnabled) {
         FullyQualifiedJavaType fqjt = introspectedColumn
                 .getFullyQualifiedJavaType();
         String property = introspectedColumn.getJavaProperty();
@@ -293,7 +291,7 @@ public class JavaBeansUtil {
         method.addParameter(new Parameter(fqjt, property));
 
         StringBuilder sb = new StringBuilder();
-        if (introspectedColumn.isStringColumn() && isTrimStringsEnabled(introspectedColumn)) {
+        if (introspectedColumn.isStringColumn() && trimStringsEnabled) {
             sb.append("this."); //$NON-NLS-1$
             sb.append(property);
             sb.append(" = "); //$NON-NLS-1$
@@ -327,28 +325,25 @@ public class JavaBeansUtil {
                 compilationUnit.getImportedTypes());
     }
 
-    private static boolean isTrimStringsEnabled(Context context) {
-        Properties properties = context
-                .getJavaModelGeneratorConfiguration().getProperties();
-        return isTrue(properties
-                .getProperty(PropertyRegistry.MODEL_GENERATOR_TRIM_STRINGS));
+    private static boolean isTrimStringsEnabled(Properties properties) {
+        return isTrue(properties.getProperty(PropertyRegistry.MODEL_GENERATOR_TRIM_STRINGS));
     }
 
-    private static boolean isTrimStringsEnabled(IntrospectedTable table) {
+    private static boolean isTrimStringsEnabled(IntrospectedTable table, Properties properties) {
         TableConfiguration tableConfiguration = table.getTableConfiguration();
         String trimSpaces = tableConfiguration.getProperties().getProperty(
                 PropertyRegistry.MODEL_GENERATOR_TRIM_STRINGS);
         if (trimSpaces != null) {
             return isTrue(trimSpaces);
         }
-        return isTrimStringsEnabled(table.getContext());
+        return isTrimStringsEnabled(properties);
     }
 
-    private static boolean isTrimStringsEnabled(IntrospectedColumn column) {
+    public static boolean isTrimStringsEnabled(IntrospectedColumn column, Properties properties) {
         String trimSpaces = column.getProperties().getProperty(PropertyRegistry.MODEL_GENERATOR_TRIM_STRINGS);
         if (trimSpaces != null) {
             return isTrue(trimSpaces);
         }
-        return isTrimStringsEnabled(column.getIntrospectedTable());
+        return isTrimStringsEnabled(column.getIntrospectedTable(), properties);
     }
 }

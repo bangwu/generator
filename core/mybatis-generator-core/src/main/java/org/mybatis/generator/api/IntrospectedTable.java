@@ -751,6 +751,7 @@ public abstract class IntrospectedTable {
         sb.append(pakkage);
         sb.append('.');
         sb.append(fullyQualifiedTable.getDomainObjectName());
+        sb.append("DO");
         setBaseRecordType(sb.toString());
 
         sb.setLength(0);
@@ -784,7 +785,6 @@ public abstract class IntrospectedTable {
         sb.append(pakkage);
         sb.append('.');
         sb.append(fullyQualifiedTable.getDomainObjectName());
-        sb.append("Domain");
         setBaseDomainType(sb.toString());
     }
 

@@ -25,6 +25,7 @@ import org.mybatis.generator.codegen.RootClassInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.mybatis.generator.internal.util.JavaBeansUtil.*;
 import static org.mybatis.generator.internal.util.messages.Messages.getString;
@@ -85,7 +86,9 @@ public class SimpleDomainGenerator extends AbstractJavaGenerator {
             }
 
             if (!introspectedTable.isImmutable()) {
-                method = getJavaBeansSetter(introspectedColumn, context, introspectedTable);
+                Properties properties = context.getJavaDomainGeneratorConfiguration().getProperties();
+                boolean trimStringsEnabled = isTrimStringsEnabled(introspectedColumn, properties);
+                method = getJavaBeansSetter(introspectedColumn, context, introspectedTable, trimStringsEnabled);
                 if (plugins.modelSetterMethodGenerated(method, topLevelClass, introspectedColumn, introspectedTable,
                         Plugin.ModelClassType.BASE_RECORD)) {
                     topLevelClass.addMethod(method);
