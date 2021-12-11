@@ -15,11 +15,7 @@
  */
 package org.mybatis.generator.plugins;
 
-import java.util.List;
-import java.util.Properties;
-
 import org.mybatis.generator.api.IntrospectedTable;
-import org.mybatis.generator.api.IntrospectedTable.TargetRuntime;
 import org.mybatis.generator.api.PluginAdapter;
 import org.mybatis.generator.api.dom.java.Field;
 import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
@@ -27,6 +23,9 @@ import org.mybatis.generator.api.dom.java.JavaVisibility;
 import org.mybatis.generator.api.dom.java.TopLevelClass;
 import org.mybatis.generator.api.dom.kotlin.KotlinFile;
 import org.mybatis.generator.api.dom.kotlin.KotlinType;
+
+import java.util.List;
+import java.util.Properties;
 
 /**
  * This plugin adds the java.io.Serializable marker interface to all generated
@@ -106,14 +105,13 @@ public class SerializablePlugin extends PluginAdapter {
             field.setStatic(true);
             field.setVisibility(JavaVisibility.PRIVATE);
 
-            if (introspectedTable.getTargetRuntime() == TargetRuntime.MYBATIS3_DSQL) {
-                context.getCommentGenerator().addFieldAnnotation(field, introspectedTable,
-                        topLevelClass.getImportedTypes());
-            } else {
-                context.getCommentGenerator().addFieldComment(field, introspectedTable);
-            }
+//            if (introspectedTable.getTargetRuntime() == TargetRuntime.MYBATIS3_DSQL) {
+//                context.getCommentGenerator().addFieldAnnotation(field, introspectedTable,
+//                        topLevelClass.getImportedTypes());
+//            } else {
+//                context.getCommentGenerator().addFieldComment(field, introspectedTable);
+//            }
 
-//            topLevelClass.addField(field);
             topLevelClass.getFields().add(0, field);
         }
     }

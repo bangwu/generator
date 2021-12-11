@@ -15,33 +15,21 @@
  */
 package org.mybatis.generator.config;
 
-import static org.mybatis.generator.internal.util.StringUtility.composeFullyQualifiedTableName;
-import static org.mybatis.generator.internal.util.StringUtility.isTrue;
-import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
-import static org.mybatis.generator.internal.util.messages.Messages.getString;
+import org.mybatis.generator.api.*;
+import org.mybatis.generator.internal.JDBCConnectionFactory;
+import org.mybatis.generator.internal.ObjectFactory;
+import org.mybatis.generator.internal.PluginAggregator;
+import org.mybatis.generator.internal.db.DatabaseIntrospector;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
-import org.mybatis.generator.api.CommentGenerator;
-import org.mybatis.generator.api.ConnectionFactory;
-import org.mybatis.generator.api.GeneratedJavaFile;
-import org.mybatis.generator.api.GeneratedKotlinFile;
-import org.mybatis.generator.api.GeneratedXmlFile;
-import org.mybatis.generator.api.IntrospectedTable;
-import org.mybatis.generator.api.JavaFormatter;
-import org.mybatis.generator.api.JavaTypeResolver;
-import org.mybatis.generator.api.KotlinFormatter;
-import org.mybatis.generator.api.Plugin;
-import org.mybatis.generator.api.ProgressCallback;
-import org.mybatis.generator.api.XmlFormatter;
-import org.mybatis.generator.internal.JDBCConnectionFactory;
-import org.mybatis.generator.internal.ObjectFactory;
-import org.mybatis.generator.internal.PluginAggregator;
-import org.mybatis.generator.internal.db.DatabaseIntrospector;
+import static org.mybatis.generator.internal.util.StringUtility.*;
+import static org.mybatis.generator.internal.util.messages.Messages.getString;
 
 public class Context extends PropertyHolder {
 
@@ -56,6 +44,8 @@ public class Context extends PropertyHolder {
     private JavaTypeResolverConfiguration javaTypeResolverConfiguration;
 
     private JavaModelGeneratorConfiguration javaModelGeneratorConfiguration;
+
+    private JavaDomainGeneratorConfiguration javaDomainGeneratorConfiguration;
 
     private JavaClientGeneratorConfiguration javaClientGeneratorConfiguration;
 
@@ -112,6 +102,10 @@ public class Context extends PropertyHolder {
         return javaModelGeneratorConfiguration;
     }
 
+    public JavaDomainGeneratorConfiguration getJavaDomainGeneratorConfiguration() {
+        return javaDomainGeneratorConfiguration;
+    }
+
     public JavaTypeResolverConfiguration getJavaTypeResolverConfiguration() {
         return javaTypeResolverConfiguration;
     }
@@ -153,6 +147,10 @@ public class Context extends PropertyHolder {
             errors.add(getString("ValidationError.8", id)); //$NON-NLS-1$
         } else {
             javaModelGeneratorConfiguration.validate(errors, id);
+        }
+
+        if (Objects.nonNull(javaDomainGeneratorConfiguration)) {
+            javaDomainGeneratorConfiguration.validate(errors, id);
         }
 
         if (javaClientGeneratorConfiguration != null) {
@@ -205,6 +203,10 @@ public class Context extends PropertyHolder {
     public void setJavaModelGeneratorConfiguration(
             JavaModelGeneratorConfiguration javaModelGeneratorConfiguration) {
         this.javaModelGeneratorConfiguration = javaModelGeneratorConfiguration;
+    }
+
+    public void setJavaDomainGeneratorConfiguration(JavaDomainGeneratorConfiguration javaDomainGeneratorConfiguration) {
+        this.javaDomainGeneratorConfiguration = javaDomainGeneratorConfiguration;
     }
 
     public void setJavaTypeResolverConfiguration(

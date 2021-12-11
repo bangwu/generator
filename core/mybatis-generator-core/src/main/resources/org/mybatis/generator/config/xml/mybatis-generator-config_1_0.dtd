@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-       Copyright 2006-2019 the original author or authors.
+       Copyright 2006-2021 the original author or authors.
 
        Licensed under the Apache License, Version 2.0 (the "License");
        you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@
   tables.
 -->
 <!ELEMENT context (property*, plugin*, commentGenerator?, (connectionFactory | jdbcConnection), javaTypeResolver?,
-                         javaModelGenerator, sqlMapGenerator?, javaClientGenerator?, table+)>
+                         javaModelGenerator, javaDomainGenerator?, sqlMapGenerator?, javaClientGenerator?, table+)>
 <!ATTLIST context id ID #REQUIRED
   defaultModelType CDATA #IMPLIED
   targetRuntime CDATA #IMPLIED
@@ -112,6 +112,16 @@
 <!ATTLIST javaModelGenerator
   targetPackage CDATA #REQUIRED
   targetProject CDATA #REQUIRED>
+
+<!--
+  The javaDomainGenerator element is used to define properties of the Java Domain Generator.
+  The Java Domain Generator builds primary key classes, record classes, and Query by Example
+  indicator classes.
+-->
+<!ELEMENT javaDomainGenerator (property*)>
+<!ATTLIST javaDomainGenerator
+        targetPackage CDATA #REQUIRED
+        targetProject CDATA #REQUIRED>
 
 <!--
   The javaTypeResolver element is used to define properties of the Java Type Resolver.

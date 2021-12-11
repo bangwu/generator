@@ -1,5 +1,5 @@
 /*
- *    Copyright 2006-2020 the original author or authors.
+ *    Copyright 2006-2021 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,11 +15,6 @@
  */
 package org.mybatis.generator.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.StringReader;
-import java.util.Properties;
-
 import org.junit.jupiter.api.Test;
 import org.mybatis.generator.api.CommentGenerator;
 import org.mybatis.generator.api.GeneratedXmlFile;
@@ -32,6 +27,11 @@ import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.codegen.XmlConstants;
 import org.mybatis.generator.config.PropertyRegistry;
 import org.xml.sax.InputSource;
+
+import java.io.StringReader;
+import java.util.Properties;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This test is related to issue #87 where XML files are slightly different

@@ -15,34 +15,19 @@
  */
 package org.mybatis.generator.api;
 
-import static org.mybatis.generator.internal.util.StringUtility.isTrue;
-import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
-
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.mybatis.generator.config.Context;
-import org.mybatis.generator.config.GeneratedKey;
-import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
-import org.mybatis.generator.config.JavaModelGeneratorConfiguration;
-import org.mybatis.generator.config.ModelType;
-import org.mybatis.generator.config.PropertyHolder;
-import org.mybatis.generator.config.PropertyRegistry;
-import org.mybatis.generator.config.SqlMapGeneratorConfiguration;
-import org.mybatis.generator.config.TableConfiguration;
+import org.mybatis.generator.config.*;
 import org.mybatis.generator.internal.rules.ConditionalModelRules;
 import org.mybatis.generator.internal.rules.FlatModelRules;
 import org.mybatis.generator.internal.rules.HierarchicalModelRules;
 import org.mybatis.generator.internal.rules.Rules;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.mybatis.generator.internal.util.StringUtility.isTrue;
+import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
 
 /**
  * Base class for all code generator implementations. This class provides many
@@ -62,6 +47,7 @@ public abstract class IntrospectedTable {
     protected enum InternalAttribute {
         ATTR_PRIMARY_KEY_TYPE,
         ATTR_BASE_RECORD_TYPE,
+        ATTR_BASE_DOMAIN_TYPE,
         ATTR_RECORD_WITH_BLOBS_TYPE,
         ATTR_EXAMPLE_TYPE,
         ATTR_MYBATIS3_XML_MAPPER_PACKAGE,
@@ -279,6 +265,10 @@ public abstract class IntrospectedTable {
         return internalAttributes.get(InternalAttribute.ATTR_BASE_RECORD_TYPE);
     }
 
+    public String getBaseDomainType() {
+        return internalAttributes.get(InternalAttribute.ATTR_BASE_DOMAIN_TYPE);
+    }
+
     public String getKotlinRecordType() {
         return internalAttributes.get(InternalAttribute.ATTR_KOTLIN_RECORD_TYPE);
     }
@@ -387,6 +377,10 @@ public abstract class IntrospectedTable {
         calculateJavaClientAttributes();
         calculateModelAttributes();
         calculateXmlAttributes();
+
+        if (Objects.nonNull(context.getJavaDomainGeneratorConfiguration())) {
+            calculateDomainAttributes();
+        }
 
         if (tableConfiguration.getModelType() == ModelType.HIERARCHICAL) {
             rules = new HierarchicalModelRules(this);
@@ -735,6 +729,14 @@ public abstract class IntrospectedTable {
                 + fullyQualifiedTable.getSubPackageForModel(isSubPackagesEnabled(config));
     }
 
+    protected String calculateJavaDomainPackage() {
+        JavaDomainGeneratorConfiguration config = context
+                .getJavaDomainGeneratorConfiguration();
+
+        return config.getTargetPackage()
+                + fullyQualifiedTable.getSubPackageForDomain(isSubPackagesEnabled(config));
+    }
+
     protected void calculateModelAttributes() {
         String pakkage = calculateJavaModelPackage();
 
@@ -771,6 +773,19 @@ public abstract class IntrospectedTable {
         sb.append(fullyQualifiedTable.getDomainObjectName());
         sb.append("Example"); //$NON-NLS-1$
         setExampleType(sb.toString());
+    }
+
+    protected void calculateDomainAttributes() {
+        String pakkage = calculateJavaDomainPackage();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.setLength(0);
+        sb.append(pakkage);
+        sb.append('.');
+        sb.append(fullyQualifiedTable.getDomainObjectName());
+        sb.append("Domain");
+        setBaseDomainType(sb.toString());
     }
 
     /**
@@ -931,6 +946,11 @@ public abstract class IntrospectedTable {
 
     public void setBaseRecordType(String baseRecordType) {
         internalAttributes.put(InternalAttribute.ATTR_BASE_RECORD_TYPE,
+                baseRecordType);
+    }
+
+    public void setBaseDomainType(String baseRecordType) {
+        internalAttributes.put(InternalAttribute.ATTR_BASE_DOMAIN_TYPE,
                 baseRecordType);
     }
 

@@ -1,5 +1,5 @@
 /*
- *    Copyright 2006-2020 the original author or authors.
+ *    Copyright 2006-2021 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  */
 package org.mybatis.generator.api;
 
-import static org.mybatis.generator.internal.util.StringUtility.composeFullyQualifiedTableName;
-import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
+import org.mybatis.generator.config.Context;
+import org.mybatis.generator.config.DomainObjectRenamingRule;
+import org.mybatis.generator.internal.util.JavaBeansUtil;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.mybatis.generator.config.Context;
-import org.mybatis.generator.config.DomainObjectRenamingRule;
-import org.mybatis.generator.internal.util.JavaBeansUtil;
+import static org.mybatis.generator.internal.util.StringUtility.composeFullyQualifiedTableName;
+import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
 
 public class FullyQualifiedTable {
 
@@ -293,6 +293,18 @@ public class FullyQualifiedTable {
      * @return the subpackage for this table
      */
     public String getSubPackageForModel(boolean isSubPackagesEnabled) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getSubPackageForClientOrSqlMap(isSubPackagesEnabled));
+
+        if (stringHasValue(domainObjectSubPackage)) {
+            sb.append('.');
+            sb.append(domainObjectSubPackage);
+        }
+
+        return sb.toString();
+    }
+
+    public String getSubPackageForDomain(boolean isSubPackagesEnabled) {
         StringBuilder sb = new StringBuilder();
         sb.append(getSubPackageForClientOrSqlMap(isSubPackagesEnabled));
 
